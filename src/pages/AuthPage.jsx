@@ -141,6 +141,7 @@ export function SignupFreelancer() {
           last_name: formData.lastName,
           email: formData.email,
           country: formData.country,
+          password: formData.password,
           role: "freelancer", // Role is freelancer
         },
       ]);
@@ -228,6 +229,7 @@ export function SignupClient() {
           last_name: formData.lastName,
           email: formData.email,
           country: formData.country,
+          password: formData.password,
           role: "client", // Role is client
         },
       ]);
