@@ -2,7 +2,7 @@ import { useState } from "react";
 import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
 
-export default function SignupClientForm() {
+export default function SignupFreelancerForm() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -31,7 +31,7 @@ export default function SignupClientForm() {
       return;
     }
 
-    // Store user details in "users" table (role = "client")
+    // Store user details in "users" table (role = "freelancer")
     await supabase.from("users").insert([
       {
         id: data.user.id,
@@ -40,7 +40,7 @@ export default function SignupClientForm() {
         email: formData.email,
         country: formData.country,
         password: formData.password,
-        role: "client",
+        role: "freelancer",
       },
     ]);
 
@@ -51,7 +51,7 @@ export default function SignupClientForm() {
   return (
     <div className="d-flex flex-column align-items-center justify-content-center vh-100 bg-light">
       <div className="container p-4 shadow-lg bg-white rounded" style={{ maxWidth: "500px" }}>
-        <h2 className="text-center mb-4">Sign Up as a Client</h2>
+        <h2 className="text-center mb-4">Sign Up as a Freelancer</h2>
         <form onSubmit={handleSignup}>
           {error && <p className="text-danger text-center">{error}</p>}
           <div className="row mb-3">
