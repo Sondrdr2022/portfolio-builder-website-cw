@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LoginForm from "./LoginForm";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
+  const navigate = useNavigate();
+
 
   return (
     <div className="d-flex flex-column align-items-center justify-content-center vh-100 bg-light">
@@ -28,6 +30,9 @@ export default function AuthForm() {
             {isLogin ? "Sign Up" : "Log In"}
           </button>
         </p>
+        <button className="btn btn-secondary w-100 mt-2" onClick={() => navigate("/")}>
+          Go to Homepage
+        </button>
       </div>
     </div>
   );

@@ -3,15 +3,17 @@ import AuthPage from "./pages/AuthPage";
 import { SignupClient } from "./pages/SignupClient";
 import { SignupFreelancer } from "./pages/SignupFreelancer";
 import Dashboard from "./pages/Dashboard";
+import Home from "./pages/Home";
 
 export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<AuthPage />} />
+        <Route path="/login" element={<AuthPage />} />
         <Route path="/signup-client" element={<SignupClient />} />
         <Route path="/signup-freelancer" element={<SignupFreelancer />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/" element={< Home />} />
       </Routes>
     </Router>
   );
