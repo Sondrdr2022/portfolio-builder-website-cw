@@ -11,6 +11,11 @@ export default function AuthForm() {
   return (
     <div className="d-flex flex-column align-items-center justify-content-center vh-100 bg-light">
       <div className="container p-4 shadow-lg bg-white rounded" style={{ maxWidth: "400px" }}>
+         {/* Company Name */}
+         <div className="text-center mb-3">
+          <h1 className="fw-bold">jobstealers</h1>
+        </div>
+        
         <h2 className="text-center mb-4">
           {isLogin ? "Log in to Your Account" : "Join as a Client or Freelancer"}
         </h2>

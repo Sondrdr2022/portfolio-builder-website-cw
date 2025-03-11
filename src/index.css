@@ -5,3 +5,11 @@ body {
   padding: 0;
 }
 
+/*Home page*/
+
+.narrow-btn {
+  width: 120px; /* Adjust width as needed */
+  padding: 5px 10px;
+}
+
+

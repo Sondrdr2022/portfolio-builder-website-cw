@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../supabaseClient";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons
 import { useNavigate } from "react-router-dom";
 
 export default function SignupFreelancerForm() {
@@ -12,6 +13,8 @@ export default function SignupFreelancerForm() {
   });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false); // Toggle state
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -65,8 +68,22 @@ export default function SignupFreelancerForm() {
           <div className="mb-3">
             <input type="email" name="email" placeholder="Email" className="form-control" onChange={handleChange} required />
           </div>
-          <div className="mb-3">
-            <input type="password" name="password" placeholder="Password (8 or more characters)" className="form-control" onChange={handleChange} required />
+          <div className="mb-3 position-relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password (8 or more characters)"
+              className="form-control"
+              onChange={handleChange}
+              required
+            />
+            <span
+              className="position-absolute top-50 end-0 translate-middle-y me-3"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{ cursor: "pointer" }}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
           </div>
           <div className="mb-3">
             <select name="country" className="form-select" required onChange={handleChange}>
@@ -79,7 +96,7 @@ export default function SignupFreelancerForm() {
           <button className="btn btn-success w-100">Create Account</button>
         </form>
         <p className="text-center mt-3">
-          Already have an account? <a href="/" className="text-primary">Log In</a>
+          Already have an account? <a href="/login" className="text-primary">Log In</a>
         </p>
       </div>
     </div>

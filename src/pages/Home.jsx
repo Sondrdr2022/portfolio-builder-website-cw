@@ -80,7 +80,7 @@ export default function Home() {
                     <p className="text-muted">{freelancer.title}</p>
                     <span className="badge bg-success">{freelancer.rating} ⭐ ({freelancer.jobs} jobs)</span>
                     <p className="fw-bold mt-2">{freelancer.price}/hr</p>
-                    <Link to="/profile" className="btn btn-success">See more</Link>
+                    <Link to="/login" className="btn btn-success">See more</Link>
                     </div>
                 </div>
                 ))}
