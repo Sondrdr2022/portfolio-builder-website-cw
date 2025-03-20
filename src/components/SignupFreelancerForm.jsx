@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../supabaseClient";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function SignupFreelancerForm() {
   const [formData, setFormData] = useState({
@@ -10,11 +10,12 @@ export default function SignupFreelancerForm() {
     email: "",
     password: "",
     country: "",
+    mobile: "",
+    job: "",
   });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false); // Toggle state
-
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,7 +24,6 @@ export default function SignupFreelancerForm() {
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    // Create user in Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
@@ -34,7 +34,6 @@ export default function SignupFreelancerForm() {
       return;
     }
 
-    // Store user details in "users" table (role = "freelancer")
     await supabase.from("users").insert([
       {
         id: data.user.id,
@@ -44,11 +43,13 @@ export default function SignupFreelancerForm() {
         country: formData.country,
         password: formData.password,
         role: "freelancer",
+        mobile: formData.mobile,
+        job: formData.job,
       },
     ]);
 
     alert("Account created successfully! Please check your email to verify.");
-    navigate("/");
+    navigate("/dashboard");
   };
 
   return (
@@ -78,12 +79,32 @@ export default function SignupFreelancerForm() {
               required
             />
             <span
-              className="position-absolute top-50 end-0 translate-middle-y me-3"
+              className="position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
               style={{ cursor: "pointer" }}
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
+          </div>
+          <div className="mb-3">
+            <input
+              type="text"
+              name="job"
+              placeholder="Job Role (e.g., Copywriter, Designer)"
+              className="form-control"
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <input
+              type="tel"
+              name="mobile"
+              placeholder="Mobile Contact"
+              className="form-control"
+              onChange={handleChange}
+              required
+            />
           </div>
           <div className="mb-3">
             <select name="country" className="form-select" required onChange={handleChange}>
