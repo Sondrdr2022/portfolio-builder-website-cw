@@ -12,19 +12,45 @@ export default function LoginForm() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
-    const { data, error } = await supabase.auth.signInWithPassword({
+  
+    // Sign in
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+  
+    if (authError) {
+      setError(authError.message);
+      return;
+    }
 
-    if (error) {
-      setError(error.message);
+    console.log('Logged in user ID:', authData.user.id);
+
+  
+    // Fetch user role from users table
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('role, id')
+      .eq('id', authData.user.id)
+      .single();
+  
+    if (userError || !userData) {
+      setError('User role not found');
+      
+      return;
+    }
+  
+    // Redirect by role
+    if (userData.role === 'freelancer') {
+      navigate(`/freelancer-dashboard/${userData.id}`);
+    } else if (userData.role === 'client') {
+      navigate(`/client-dashboard/${userData.id}`);
     } else {
-      alert("Login successful!");
-      navigate("/dashboard");
+      setError('User role not found');
     }
   };
+  
+  
 
   return (
     <form onSubmit={handleLogin}>
