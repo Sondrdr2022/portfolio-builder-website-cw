@@ -17,7 +17,7 @@ export default function FreelancerDashboard() {
 
       const { data, error } = await supabase
         .from("users")
-        .select("first_name, last_name, job, email, country, mobile")
+        .select("id, first_name, last_name, job, email, country, mobile, description") 
         .eq("id", id)
         .single();
 
@@ -31,6 +31,8 @@ export default function FreelancerDashboard() {
 
     fetchUserData();
   }, [id, navigate]);
+
+  console.log("User data:", userData);
 
   return (
     <div className="d-flex">
@@ -51,9 +53,9 @@ export default function FreelancerDashboard() {
               <div>
                 <h3 className="fw-bold">{userData.first_name} {userData.last_name}</h3>
                 <p className="text-muted mb-1">{userData.job}</p>
-                <p className="text-secondary">{userData.email}</p>
-                <p className="text-secondary">{userData.country}</p>
-                <p className="text-secondary">Mobile: {userData.mobile}</p>
+                {userData.description && (
+                  <p className="fst-italic text-secondary mb-2">{userData.description}</p>
+                )}
               </div>
             </div>
             <h4 className="fw-bold mb-3 text-center">My Projects</h4>
