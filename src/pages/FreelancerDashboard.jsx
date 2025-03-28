@@ -19,7 +19,7 @@ export default function FreelancerDashboard() {
 
       const { data, error } = await supabase
         .from("users")
-        .select("id, first_name, last_name, job, email, country, mobile, description") 
+        .select("id, first_name, last_name, job, email, country, mobile, description, profile_image")
         .eq("id", id)
         .single();
 
@@ -52,6 +52,23 @@ export default function FreelancerDashboard() {
     setVisibleCount((prevCount) => prevCount + 6);
   };
 
+  const handleDelete = async (projectId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this project?");
+    if (!confirmDelete) return;
+
+    const { error } = await supabase
+      .from("freelancer_portfolios")
+      .delete()
+      .eq("id", projectId);
+
+    if (error) {
+      console.error("Failed to delete project:", error);
+      alert("An error occurred while deleting the project.");
+    } else {
+      setProjects((prev) => prev.filter((proj) => proj.id !== projectId));
+    }
+  };
+
   return (
     <div className="d-flex">
       <Sidebar userData={userData} />
@@ -61,11 +78,17 @@ export default function FreelancerDashboard() {
             <h2 className="fw-bold mb-4">Dashboard</h2>
             <div className="d-flex align-items-start mb-4">
               <img
-                src="https://www.gravatar.com/avatar/"
+                src={userData.profile_image || "https://via.placeholder.com/120"}
                 alt="Profile"
                 className="rounded-circle me-4"
                 width="120"
                 height="120"
+                style={{
+                  objectFit: "cover",
+                  border: "3px solid #dee2e6",
+                  padding: "4px",
+                  backgroundColor: "#fff",
+                }}
               />
               <div>
                 <h3 className="fw-bold">{userData.first_name} {userData.last_name}</h3>
@@ -75,10 +98,19 @@ export default function FreelancerDashboard() {
                 )}
               </div>
             </div>
+
             <h4 className="fw-bold mb-3 text-center">My Projects</h4>
             <div className="d-flex justify-content-center gap-4 flex-wrap">
               {projects.slice(0, visibleCount).map((project) => (
-                <div key={project.id} className="card" style={{ width: '18rem' }}>
+                <div key={project.id} className="card position-relative" style={{ width: '18rem' }}>
+                  <button
+                    onClick={() => handleDelete(project.id)}
+                    className="btn btn-sm btn-danger position-absolute"
+                    style={{ top: '5px', right: '5px' }}
+                    title="Delete Project"
+                  >
+                    🗑️
+                  </button>
                   <img
                     src={project.screenshot_url || "https://via.placeholder.com/300"}
                     className="card-img-top"
@@ -99,6 +131,7 @@ export default function FreelancerDashboard() {
                 </div>
               ))}
             </div>
+
             {visibleCount < projects.length && (
               <div className="text-center mt-4">
                 <button className="btn btn-primary" onClick={loadMoreProjects}>See More</button>

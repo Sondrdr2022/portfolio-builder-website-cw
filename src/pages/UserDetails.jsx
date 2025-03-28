@@ -14,10 +14,11 @@ export default function UserDetails() {
     country: '',
     description: '',
     image: '',
-    job: ''
+    job: '',
+    rate: '' // Add rate field
   });
 
-  const [showPassword, setShowPassword] = useState(false); // 👈 Password toggle state
+  const [showPassword, setShowPassword] = useState(false);
   const { id } = useParams();
 
   useEffect(() => {
@@ -44,26 +45,26 @@ export default function UserDetails() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const updates = {
       description: userData.description,
+      rate: parseFloat(userData.rate) || 0
     };
-  
+
     const { data, error } = await supabase
       .from('users')
       .update(updates)
       .eq('id', id)
       .select();
-  
+
     if (error) {
       console.error("Update failed:", error);
-      alert('Failed to save description');
+      alert('Failed to save changes');
     } else {
-      console.log("Description updated:", data);
-      alert('Description updated successfully!');
+      console.log("User data updated:", data);
+      alert('Changes updated successfully!');
     }
   };
-    
 
   return (
     <div className="d-flex">
@@ -97,34 +98,48 @@ export default function UserDetails() {
               <input type="email" className="form-control" name="email" value={userData.email} onChange={handleChange} disabled />
             </div>
             <div className="col position-relative">
-            <label>Password</label>
-            <div className="position-relative">
+              <label>Password</label>
+              <div className="position-relative">
                 <input
-                type={showPassword ? 'text' : 'password'}
-                className="form-control pe-5" // Add pe-5 for right-side padding
-                name="password"
-                value={userData.password}
-                onChange={handleChange}
-                disabled
+                  type={showPassword ? 'text' : 'password'}
+                  className="form-control pe-5"
+                  name="password"
+                  value={userData.password}
+                  onChange={handleChange}
+                  disabled
                 />
                 <span
-                style={{
+                  style={{
                     position: 'absolute',
                     top: '50%',
                     right: '12px',
                     transform: 'translateY(-50%)',
                     cursor: 'pointer',
-                    color: '#6c757d',
-                }}
-                onClick={() => setShowPassword(!showPassword)}
+                    color: '#6c757d'
+                  }}
+                  onClick={() => setShowPassword(!showPassword)}
                 >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </span>
-            </div>
+              </div>
             </div>
             <div className="col">
               <label>Country</label>
               <input type="text" className="form-control" name="country" value={userData.country} onChange={handleChange} disabled />
+            </div>
+          </div>
+
+          <div className="row mb-3">
+            <div className="col-md-6">
+              <label>Rate (USD/hour)</label>
+              <input
+                type="number"
+                className="form-control"
+                name="rate"
+                value={userData.rate || ''}
+                onChange={handleChange}
+                placeholder="e.g. 50"
+              />
             </div>
           </div>
 
@@ -138,6 +153,7 @@ export default function UserDetails() {
               onChange={handleChange}
             ></textarea>
           </div>
+
           <button type="submit" className="btn btn-primary">Save Changes</button>
         </form>
       </div>
