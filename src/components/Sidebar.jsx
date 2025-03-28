@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom"; // Add useParams
 import { supabase } from "../supabaseClient";
 import { motion } from "framer-motion";
-import { Menu, X } from "lucide-react"; // Hamburger and close icons
+import { Menu, X } from "lucide-react";
 
 export default function Sidebar({ userData }) {
   const navigate = useNavigate();
+  const { id: paramId } = useParams(); // fallback from URL if userData not available
+  const id = userData?.id || paramId;
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -14,28 +16,31 @@ export default function Sidebar({ userData }) {
   };
 
   const goToDashboard = () => {
-    if (userData?.id) {
-      navigate(`/freelancer-dashboard/${userData.id}`);
+    if (id) {
+      navigate(`/freelancer-dashboard/${id}`);
     }
   };
 
   const goToEditPage = () => {
-    if (userData?.id) {
-      navigate(`/freelancer-dashboard/${userData.id}/details`);
+    if (id) {
+      navigate(`/freelancer-dashboard/${id}/details`);
     }
   };
 
   const goToPortfolio = () => {
-    if (userData?.id) {
-      navigate(`/freelancer-dashboard/${userData.id}/portfolio`);
+    if (id) {
+      navigate(`/freelancer-dashboard/${id}/portfolio`);
     }
   };
-  
-  
+
+  const goToActivity = () => {
+    if (id) {
+      navigate(`/freelancer-dashboard/${id}/activity`);
+    }
+  };
 
   return (
     <>
-      {/* Hamburger button for mobile */}
       <button
         className="d-md-none position-fixed top-3 start-3 btn btn-dark rounded-circle p-2"
         style={{ zIndex: 9999 }}
@@ -44,8 +49,6 @@ export default function Sidebar({ userData }) {
         <Menu size={24} />
       </button>
 
-
-      {/* Sidebar for larger screens */}
       <div
         className="bg-dark text-white p-3 d-none d-md-flex flex-column align-items-start"
         style={{ width: "250px", minHeight: "100vh" }}
@@ -55,11 +58,11 @@ export default function Sidebar({ userData }) {
           goToDashboard={goToDashboard}
           goToEditPage={goToEditPage}
           goToPortfolio={goToPortfolio}
+          goToActivity={goToActivity}
           handleLogout={handleLogout}
         />
       </div>
 
-      {/* Animated sidebar for mobile */}
       {isOpen && (
         <motion.div
           initial={{ x: -300 }}
@@ -87,7 +90,11 @@ export default function Sidebar({ userData }) {
             }}
             goToPortfolio={() => {
               goToPortfolio();
-              setIsOpen(false); // For mobile sidebar close on click
+              setIsOpen(false);
+            }}
+            goToActivity={() => {
+              goToActivity();
+              setIsOpen(false);
             }}
             handleLogout={handleLogout}
           />
@@ -97,7 +104,7 @@ export default function Sidebar({ userData }) {
   );
 }
 
-function SidebarContent({ userData, goToDashboard, goToEditPage, goToPortfolio, handleLogout }) {
+function SidebarContent({ userData, goToDashboard, goToEditPage, goToPortfolio, goToActivity, handleLogout }) {
   return (
     <>
       <div className="d-flex align-items-center mb-4 w-100">
@@ -110,9 +117,9 @@ function SidebarContent({ userData, goToDashboard, goToEditPage, goToPortfolio, 
         />
         <div>
           <h5 className="fw-bold mb-0">
-            {userData?.first_name} {userData?.last_name}
+            {userData?.first_name || "Profile"} {userData?.last_name || ""}
           </h5>
-          <small className="text-muted">{userData?.job}</small>
+          <small className="text-muted">{userData?.job || "Freelancer"}</small>
         </div>
       </div>
       <ul className="list-unstyled w-100">
@@ -133,17 +140,20 @@ function SidebarContent({ userData, goToDashboard, goToEditPage, goToPortfolio, 
           </button>
         </li>
         <li className="my-3">
-        <button
-          onClick={goToPortfolio}
-          className="btn btn-link text-white p-0 text-decoration-none"
-        >
-          Portfolio
-        </button>
+          <button
+            onClick={goToPortfolio}
+            className="btn btn-link text-white p-0 text-decoration-none"
+          >
+            Portfolio
+          </button>
         </li>
         <li className="my-3">
-          <a href="#" className="text-white text-decoration-none">
+          <button
+            onClick={goToActivity}
+            className="btn btn-link text-white p-0 text-decoration-none"
+          >
             Activity
-          </a>
+          </button>
         </li>
       </ul>
       <button

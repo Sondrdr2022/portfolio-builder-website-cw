@@ -5,6 +5,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 export default function FreelancerDashboard() {
   const [userData, setUserData] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [visibleCount, setVisibleCount] = useState(6);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -29,10 +31,26 @@ export default function FreelancerDashboard() {
       }
     };
 
+    const fetchProjects = async () => {
+      const { data, error } = await supabase
+        .from("freelancer_portfolios")
+        .select("id, project_name, project_description, project_url, screenshot_url")
+        .eq("freelancer_id", id);
+
+      if (error) {
+        console.error("Error fetching projects:", error);
+      } else {
+        setProjects(data);
+      }
+    };
+
     fetchUserData();
+    fetchProjects();
   }, [id, navigate]);
 
-  console.log("User data:", userData);
+  const loadMoreProjects = () => {
+    setVisibleCount((prevCount) => prevCount + 6);
+  };
 
   return (
     <div className="d-flex">
@@ -43,7 +61,6 @@ export default function FreelancerDashboard() {
             <h2 className="fw-bold mb-4">Dashboard</h2>
             <div className="d-flex align-items-start mb-4">
               <img
-                // src={userData.image}
                 src="https://www.gravatar.com/avatar/"
                 alt="Profile"
                 className="rounded-circle me-4"
@@ -60,20 +77,33 @@ export default function FreelancerDashboard() {
             </div>
             <h4 className="fw-bold mb-3 text-center">My Projects</h4>
             <div className="d-flex justify-content-center gap-4 flex-wrap">
-              {[1, 2, 3].map((project) => (
-                <div key={project} className="card" style={{ width: '18rem' }}>
-                  <img src="https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg" className="card-img-top" alt="Project" />
+              {projects.slice(0, visibleCount).map((project) => (
+                <div key={project.id} className="card" style={{ width: '18rem' }}>
+                  <img
+                    src={project.screenshot_url || "https://via.placeholder.com/300"}
+                    className="card-img-top"
+                    alt={project.project_name}
+                  />
                   <div className="card-body">
-                    <h5 className="card-title">Project {project}</h5>
-                    <p className="card-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
-                    <a href="#" className="btn btn-primary">Go to Website</a>
+                    <h5 className="card-title">{project.project_name}</h5>
+                    <p className="card-text">{project.project_description}</p>
+                    <a
+                      href={project.project_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-primary"
+                    >
+                      Go to Website
+                    </a>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="text-center mt-4">
-              <button className="btn btn-primary">See More</button>
-            </div>
+            {visibleCount < projects.length && (
+              <div className="text-center mt-4">
+                <button className="btn btn-primary" onClick={loadMoreProjects}>See More</button>
+              </div>
+            )}
           </>
         )}
       </div>
