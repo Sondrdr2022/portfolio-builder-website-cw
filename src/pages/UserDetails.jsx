@@ -18,7 +18,6 @@ export default function UserDetails() {
     rate: '' // Add rate field
   });
 
-  const [showPassword, setShowPassword] = useState(false);
   const { id } = useParams();
 
   useEffect(() => {

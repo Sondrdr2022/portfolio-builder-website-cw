@@ -16,7 +16,7 @@ export default function Home() {
       </nav>
 
       {/* Hero Section with Dark Overlay */}
-      <header
+      <header 
         className="position-relative text-center text-white"
         style={{
           backgroundImage: "url('src/assets/banner.jpg')",
