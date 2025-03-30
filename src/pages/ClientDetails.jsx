@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { Eye, EyeOff } from "lucide-react"; // Add this to the top of the file
-import ClientSidebar from "../components/ClientSidebar.JSX";
+import ClientSidebar from "../components/ClientSidebar.jsx";
 
 export default function ClientDetails() {
   const { id } = useParams();

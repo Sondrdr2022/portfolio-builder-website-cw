@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
-import ClientSidebar from "../components/ClientSidebar.JSX";
+import ClientSidebar from "../components/ClientSidebar.jsx";
 import { useNavigate } from "react-router-dom";
 
 export default function ClientDashboard() {
