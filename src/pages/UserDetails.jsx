@@ -17,6 +17,8 @@ export default function UserDetails() {
     job: '',
     rate: '' // Add rate field
   });
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const { id } = useParams();
 
