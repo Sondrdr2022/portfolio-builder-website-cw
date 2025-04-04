@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import Sidebar from '../components/Sidebar';
-import { Eye, EyeOff } from 'lucide-react'; // For password viewer icon
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function UserDetails() {
   const [userData, setUserData] = useState({
@@ -15,11 +15,10 @@ export default function UserDetails() {
     description: '',
     image: '',
     job: '',
-    rate: '' // Add rate field
+    rate: ''
   });
+
   const [showPassword, setShowPassword] = useState(false);
-
-
   const { id } = useParams();
 
   useEffect(() => {
@@ -30,7 +29,6 @@ export default function UserDetails() {
         .eq('id', id)
         .single();
       if (data) {
-        console.log("Fetched data:", data);
         setUserData(data);
       } else {
         console.error("Fetch error:", error);
@@ -41,12 +39,11 @@ export default function UserDetails() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUserData(prevState => ({ ...prevState, [name]: value }));
+    setUserData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const updates = {
       description: userData.description,
       rate: parseFloat(userData.rate) || 0
@@ -59,80 +56,103 @@ export default function UserDetails() {
       .select();
 
     if (error) {
-      console.error("Update failed:", error);
       alert('Failed to save changes');
+      console.error("Update error:", error);
     } else {
-      console.log("User data updated:", data);
       alert('Changes updated successfully!');
     }
   };
 
   return (
-    <div className="d-flex">
-      {userData.id ? (
-        <Sidebar userData={userData} />
-      ) : (
-        <div>Loading sidebar...</div>
-      )}
+    <div className="d-flex flex-column flex-md-row" style={{ minHeight: '100vh' }}>
+      <Sidebar userData={userData} />
 
-      <div className="p-4 w-100 bg-light">
+      <main className="flex-grow-1 p-4 bg-light" style={{
+         marginLeft: window.innerWidth >= 768 ? '250px' : '0px',
+         width: '100%',
+         transition: 'margin-left 0.3s ease',
+      }} >
         <h3 className="mb-4">User Details</h3>
         <form onSubmit={handleSubmit}>
-          <div className="row mb-3">
-            <div className="col">
-              <label>Firstname</label>
-              <input type="text" className="form-control" name="first_name" value={userData.first_name} onChange={handleChange} disabled />
+          <div className="row g-3">
+            <div className="col-md-4">
+              <label className="form-label">Firstname</label>
+              <input
+                type="text"
+                className="form-control"
+                name="first_name"
+                value={userData.first_name}
+                disabled
+              />
             </div>
-            <div className="col">
-              <label>Lastname</label>
-              <input type="text" className="form-control" name="last_name" value={userData.last_name} onChange={handleChange} disabled />
+            <div className="col-md-4">
+              <label className="form-label">Lastname</label>
+              <input
+                type="text"
+                className="form-control"
+                name="last_name"
+                value={userData.last_name}
+                disabled
+              />
             </div>
-            <div className="col">
-              <label>Role</label>
-              <input type="text" className="form-control" name="role" value={userData.role} disabled />
+            <div className="col-md-4">
+              <label className="form-label">Role</label>
+              <input
+                type="text"
+                className="form-control"
+                name="role"
+                value={userData.role}
+                disabled
+              />
             </div>
-          </div>
 
-          <div className="row mb-3">
-            <div className="col">
-              <label>Email</label>
-              <input type="email" className="form-control" name="email" value={userData.email} onChange={handleChange} disabled />
+            <div className="col-md-4">
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                className="form-control"
+                name="email"
+                value={userData.email}
+                disabled
+              />
             </div>
-            <div className="col position-relative">
-              <label>Password</label>
+            <div className="col-md-4 position-relative">
+              <label className="form-label">Password</label>
               <div className="position-relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   className="form-control pe-5"
                   name="password"
                   value={userData.password}
-                  onChange={handleChange}
                   disabled
                 />
                 <span
+                  onClick={() => setShowPassword(!showPassword)}
                   style={{
                     position: 'absolute',
                     top: '50%',
-                    right: '12px',
+                    right: '10px',
                     transform: 'translateY(-50%)',
-                    cursor: 'pointer',
-                    color: '#6c757d'
+                    cursor: 'pointer'
                   }}
-                  onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </span>
               </div>
             </div>
-            <div className="col">
-              <label>Country</label>
-              <input type="text" className="form-control" name="country" value={userData.country} onChange={handleChange} disabled />
+            <div className="col-md-4">
+              <label className="form-label">Country</label>
+              <input
+                type="text"
+                className="form-control"
+                name="country"
+                value={userData.country}
+                disabled
+              />
             </div>
-          </div>
 
-          <div className="row mb-3">
-            <div className="col-md-6">
-              <label>Rate (USD/hour)</label>
+            <div className="col-md-4">
+              <label className="form-label">Rate (USD/hour)</label>
               <input
                 type="number"
                 className="form-control"
@@ -142,22 +162,24 @@ export default function UserDetails() {
                 placeholder="e.g. 50"
               />
             </div>
+
+            <div className="col-12">
+              <label className="form-label">Description</label>
+              <textarea
+                className="form-control"
+                name="description"
+                rows="4"
+                value={userData.description}
+                onChange={handleChange}
+              ></textarea>
+            </div>
           </div>
 
-          <div className="mb-3">
-            <label>Description</label>
-            <textarea
-              className="form-control"
-              name="description"
-              rows="4"
-              value={userData.description}
-              onChange={handleChange}
-            ></textarea>
+          <div className="mt-4">
+            <button type="submit" className="btn btn-primary">Save Changes</button>
           </div>
-
-          <button type="submit" className="btn btn-primary">Save Changes</button>
         </form>
-      </div>
+      </main>
     </div>
   );
 }

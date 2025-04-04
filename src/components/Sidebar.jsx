@@ -33,6 +33,7 @@ export default function Sidebar({ userData }) {
 
   return (
     <>
+      {/* Toggle for small screens */}
       <button
         className="d-md-none position-fixed top-3 start-3 btn btn-dark rounded-circle p-2"
         style={{ zIndex: 9999 }}
@@ -41,9 +42,17 @@ export default function Sidebar({ userData }) {
         <Menu size={24} />
       </button>
 
+      {/* Desktop Sidebar */}
       <div
-        className="bg-dark text-white p-3 d-none d-md-flex flex-column align-items-start"
-        style={{ width: "250px", minHeight: "100vh" }}
+        className="bg-dark text-white d-none d-md-flex flex-column justify-content-between p-3"
+        style={{
+          width: "250px",
+          height: "100vh",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          zIndex: 1000,
+        }}
       >
         <SidebarContent
           userData={userData}
@@ -55,36 +64,58 @@ export default function Sidebar({ userData }) {
         />
       </div>
 
+      {/* Mobile Sidebar with animation */}
       {isOpen && (
         <motion.div
           initial={{ x: -300 }}
           animate={{ x: 0 }}
           exit={{ x: -300 }}
           transition={{ duration: 0.3 }}
-          className="bg-dark text-white p-3 d-flex flex-column align-items-start position-fixed top-0 start-0"
+          className="bg-dark text-white p-3 d-flex flex-column justify-content-between position-fixed top-0 start-0"
           style={{ width: "250px", height: "100vh", zIndex: 9999 }}
         >
-          <button
-            className="btn btn-light mb-3 align-self-end"
-            onClick={() => setIsOpen(false)}
-          >
-            <X />
-          </button>
-          <SidebarContent
-            userData={userData}
-            goToDashboard={() => { goToDashboard(); setIsOpen(false); }}
-            goToEditPage={() => { goToEditPage(); setIsOpen(false); }}
-            goToPortfolio={() => { goToPortfolio(); setIsOpen(false); }}
-            goToActivity={() => { goToActivity(); setIsOpen(false); }}
-            handleLogout={handleLogout}
-          />
+          <div>
+            <button
+              className="btn btn-light mb-3 align-self-end"
+              onClick={() => setIsOpen(false)}
+            >
+              <X />
+            </button>
+            <SidebarContent
+              userData={userData}
+              goToDashboard={() => {
+                goToDashboard();
+                setIsOpen(false);
+              }}
+              goToEditPage={() => {
+                goToEditPage();
+                setIsOpen(false);
+              }}
+              goToPortfolio={() => {
+                goToPortfolio();
+                setIsOpen(false);
+              }}
+              goToActivity={() => {
+                goToActivity();
+                setIsOpen(false);
+              }}
+              handleLogout={handleLogout}
+            />
+          </div>
         </motion.div>
       )}
     </>
   );
 }
 
-function SidebarContent({ userData, goToDashboard, goToEditPage, goToPortfolio, goToActivity, handleLogout }) {
+function SidebarContent({
+  userData,
+  goToDashboard,
+  goToEditPage,
+  goToPortfolio,
+  goToActivity,
+  handleLogout,
+}) {
   const fileInputRef = useRef();
   const [profileImage, setProfileImage] = useState(userData?.profile_image);
 
@@ -134,8 +165,9 @@ function SidebarContent({ userData, goToDashboard, goToEditPage, goToPortfolio, 
   };
 
   return (
-    <>
-      <div className="d-flex align-items-center mb-4 w-100">
+    <div className="d-flex flex-column w-100 h-100">
+      {/* Top Profile Section */}
+      <div className="mb-4">
         <input
           type="file"
           accept="image/*"
@@ -143,52 +175,57 @@ function SidebarContent({ userData, goToDashboard, goToEditPage, goToPortfolio, 
           onChange={handleFileChange}
           style={{ display: "none" }}
         />
-        <img
-          src={profileImage || "https://via.placeholder.com/60"}
-          alt="Profile"
-          className="rounded-circle me-3"
-          width="60"
-          height="60"
-          onClick={handleImageClick}
-          style={{
-            cursor: "pointer",
-            border: "2px solid #fff",
-            objectFit: "cover",
-            transition: "0.3s ease",
-          }}
-        />
-        <div>
-          <h5 className="fw-bold mb-0">
-            {userData?.first_name || "Profile"} {userData?.last_name || ""}
-          </h5>
-          <small className="text-muted">{userData?.job || "Freelancer"}</small>
+        <div className="d-flex align-items-center">
+          <img
+            src={profileImage || "https://via.placeholder.com/60"}
+            alt="Profile"
+            className="rounded-circle me-3"
+            width="60"
+            height="60"
+            onClick={handleImageClick}
+            style={{
+              cursor: "pointer",
+              border: "2px solid #fff",
+              objectFit: "cover",
+            }}
+          />
+          <div>
+            <h5 className="fw-bold mb-0">
+              {userData?.first_name || "Profile"} {userData?.last_name || ""}
+            </h5>
+            <small className="text-muted">{userData?.job || "Freelancer"}</small>
+          </div>
         </div>
       </div>
-      <ul className="list-unstyled w-100">
-        <li className="my-3">
-          <button onClick={goToDashboard} className="btn btn-link text-white p-0 text-decoration-none">
+
+      {/* Navigation */}
+      <ul className="list-unstyled flex-grow-1">
+        <li className="my-2">
+          <button onClick={goToDashboard} className="btn btn-link text-white p-0">
             Dashboard
           </button>
         </li>
-        <li className="my-3">
-          <button onClick={goToEditPage} className="btn btn-link text-white p-0 text-decoration-none">
+        <li className="my-2">
+          <button onClick={goToEditPage} className="btn btn-link text-white p-0">
             Details
           </button>
         </li>
-        <li className="my-3">
-          <button onClick={goToPortfolio} className="btn btn-link text-white p-0 text-decoration-none">
+        <li className="my-2">
+          <button onClick={goToPortfolio} className="btn btn-link text-white p-0">
             Portfolio
           </button>
         </li>
-        <li className="my-3">
-          <button onClick={goToActivity} className="btn btn-link text-white p-0 text-decoration-none">
+        <li className="my-2">
+          <button onClick={goToActivity} className="btn btn-link text-white p-0">
             Activity
           </button>
         </li>
       </ul>
-      <button className="btn btn-outline-light mt-auto w-100" onClick={handleLogout}>
+
+      {/* Logout Button */}
+      <button className="btn btn-outline-light w-100 mt-auto" onClick={handleLogout}>
         Log Out
       </button>
-    </>
+    </div>
   );
 }
