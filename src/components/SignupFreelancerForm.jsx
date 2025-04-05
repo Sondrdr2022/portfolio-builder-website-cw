@@ -34,12 +34,12 @@ export default function SignupFreelancerForm() {
           last_name: formData.lastName,
           country: formData.country,
           mobile: formData.mobile,
-          job: formData.job,
-          role: "freelancer",
-        },
-        emailRedirectTo: "https://your-vercel-site.vercel.app/login", // replace this with your Vercel live domain
-      },
+          role: "client", // or "freelancer"
+          job: formData.job || null,
+        }
+      }
     });
+    
 
     if (error) {
       setError(error.message);

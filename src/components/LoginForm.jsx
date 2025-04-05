@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -7,14 +7,15 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
 
-    // Sign in
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -22,13 +23,13 @@ export default function LoginForm() {
 
     if (authError) {
       setError(authError.message);
+      setLoading(false);
       return;
     }
 
     const user = authData.user;
-    console.log("Signed in user ID:", user.id);
 
-    // Check if user exists in 'users' table
+    // Check if user exists in users table
     const { data: existingUser, error: fetchError } = await supabase
       .from("users")
       .select("*")
@@ -36,38 +37,39 @@ export default function LoginForm() {
       .single();
 
     if (fetchError || !existingUser) {
-      console.log("No user record found, creating one...");
-
-      // Insert into users table using metadata
+      // If not found, insert new user using metadata
       const { error: insertError } = await supabase.from("users").insert([
         {
           id: user.id,
           email: user.email,
-          first_name: user.user_metadata?.first_name,
-          last_name: user.user_metadata?.last_name,
-          country: user.user_metadata?.country,
-          mobile: user.user_metadata?.mobile,
+          first_name: user.user_metadata?.first_name || "",
+          last_name: user.user_metadata?.last_name || "",
+          country: user.user_metadata?.country || "",
+          mobile: user.user_metadata?.mobile || "",
           job: user.user_metadata?.job || null,
-          role: user.user_metadata?.role,
+          role: user.user_metadata?.role || "",
         },
       ]);
 
       if (insertError) {
-        console.error("Failed to insert user into users table:", insertError);
-        setError("Could not complete profile setup. Please contact support.");
+        console.error("Insert error:", insertError.message);
+        setError("❌ Could not complete profile setup. Please contact support.");
+        setLoading(false);
         return;
       }
     }
 
-    // Get user again to fetch role
+    // Fetch user again for role-based redirect
     const { data: userData, error: roleError } = await supabase
       .from("users")
       .select("role, id")
       .eq("id", user.id)
       .single();
 
+    setLoading(false);
+
     if (roleError || !userData) {
-      setError("User role not found");
+      setError("❌ User role not found");
       return;
     }
 
@@ -77,7 +79,7 @@ export default function LoginForm() {
     } else if (userData.role === "client") {
       navigate(`/client-dashboard/${userData.id}`);
     } else {
-      setError("User role not found");
+      setError("❌ Unknown user role");
     }
   };
 
@@ -104,7 +106,7 @@ export default function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
         />
         <span
-          className="position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer"
+          className="position-absolute top-50 end-0 translate-middle-y me-3"
           onClick={() => setShowPassword(!showPassword)}
           style={{ cursor: "pointer" }}
         >
@@ -112,7 +114,9 @@ export default function LoginForm() {
         </span>
       </div>
 
-      <button className="btn btn-success w-100">Login</button>
+      <button className="btn btn-success w-100" type="submit" disabled={loading}>
+        {loading ? "Logging in..." : "Login"}
+      </button>
     </form>
   );
 }

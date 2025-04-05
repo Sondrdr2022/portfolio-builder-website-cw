@@ -33,11 +33,12 @@ export default function SignupClientForm() {
           last_name: formData.lastName,
           country: formData.country,
           mobile: formData.mobile,
-          role: "client",
-        },
-        emailRedirectTo: "https://your-vercel-app.vercel.app/login", // change to your actual domain
-      },
+          role: "client", // or "freelancer"
+          job: formData.job || null,
+        }
+      }
     });
+    
 
     if (error) {
       setError(error.message);
