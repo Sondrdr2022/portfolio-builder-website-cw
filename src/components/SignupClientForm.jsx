@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function SignupClientForm() {
   const [formData, setFormData] = useState({
@@ -13,8 +13,8 @@ export default function SignupClientForm() {
     mobile: "",
   });
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,32 +22,29 @@ export default function SignupClientForm() {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setError(null);
 
     const { data, error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
+      options: {
+        data: {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          country: formData.country,
+          mobile: formData.mobile,
+          role: "client",
+        },
+        emailRedirectTo: "https://your-vercel-app.vercel.app/login", // change to your actual domain
+      },
     });
 
     if (error) {
       setError(error.message);
-      return;
+    } else {
+      alert("✅ Account created successfully. Please check your email to confirm your address.");
+      navigate("/login");
     }
-
-    await supabase.from("users").insert([
-      {
-        id: data.user.id,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        email: formData.email,
-        country: formData.country,
-        password: formData.password,
-        role: "client",
-        mobile: formData.mobile,
-      },
-    ]);
-
-    alert("Account created successfully! Please check your email to verify.");
-    navigate("/dashboard");
   };
 
   return (
@@ -58,26 +55,47 @@ export default function SignupClientForm() {
           {error && <p className="text-danger text-center">{error}</p>}
           <div className="row mb-3">
             <div className="col">
-              <input type="text" name="firstName" placeholder="First Name" className="form-control" onChange={handleChange} required />
+              <input
+                type="text"
+                name="firstName"
+                placeholder="First Name"
+                className="form-control"
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className="col">
-              <input type="text" name="lastName" placeholder="Last Name" className="form-control" onChange={handleChange} required />
+              <input
+                type="text"
+                name="lastName"
+                placeholder="Last Name"
+                className="form-control"
+                onChange={handleChange}
+                required
+              />
             </div>
           </div>
           <div className="mb-3">
-            <input type="email" name="email" placeholder="Email" className="form-control" onChange={handleChange} required />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              className="form-control"
+              onChange={handleChange}
+              required
+            />
           </div>
           <div className="mb-3 position-relative">
             <input
               type={showPassword ? "text" : "password"}
               name="password"
-              placeholder="Password (8 or more characters)"
+              placeholder="Password (8+ characters)"
               className="form-control"
               onChange={handleChange}
               required
             />
             <span
-              className="position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer"
+              className="position-absolute top-50 end-0 translate-middle-y me-3"
               onClick={() => setShowPassword(!showPassword)}
               style={{ cursor: "pointer" }}
             >
@@ -95,14 +113,21 @@ export default function SignupClientForm() {
             />
           </div>
           <div className="mb-3">
-            <select name="country" className="form-select" required onChange={handleChange}>
+            <select
+              name="country"
+              className="form-select"
+              onChange={handleChange}
+              required
+            >
               <option value="">Select your country</option>
               <option value="United Kingdom">United Kingdom</option>
               <option value="United States">United States</option>
               <option value="Canada">Canada</option>
             </select>
           </div>
-          <button className="btn btn-success w-100">Create Account</button>
+          <button type="submit" className="btn btn-success w-100">
+            Create Account
+          </button>
         </form>
         <p className="text-center mt-3">
           Already have an account? <a href="/login" className="text-primary">Log In</a>

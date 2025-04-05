@@ -14,8 +14,8 @@ export default function SignupFreelancerForm() {
     job: "",
   });
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,33 +23,30 @@ export default function SignupFreelancerForm() {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setError(null);
 
     const { data, error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
+      options: {
+        data: {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          country: formData.country,
+          mobile: formData.mobile,
+          job: formData.job,
+          role: "freelancer",
+        },
+        emailRedirectTo: "https://your-vercel-site.vercel.app/login", // replace this with your Vercel live domain
+      },
     });
 
     if (error) {
       setError(error.message);
-      return;
+    } else {
+      alert("✅ Account created! Please verify your email before logging in.");
+      navigate("/login");
     }
-
-    await supabase.from("users").insert([
-      {
-        id: data.user.id,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        email: formData.email,
-        country: formData.country,
-        password: formData.password,
-        role: "freelancer",
-        mobile: formData.mobile,
-        job: formData.job,
-      },
-    ]);
-
-    alert("Account created successfully! Please check your email to verify.");
-    navigate("/dashboard");
   };
 
   return (
@@ -60,26 +57,47 @@ export default function SignupFreelancerForm() {
           {error && <p className="text-danger text-center">{error}</p>}
           <div className="row mb-3">
             <div className="col">
-              <input type="text" name="firstName" placeholder="First Name" className="form-control" onChange={handleChange} required />
+              <input
+                type="text"
+                name="firstName"
+                placeholder="First Name"
+                className="form-control"
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className="col">
-              <input type="text" name="lastName" placeholder="Last Name" className="form-control" onChange={handleChange} required />
+              <input
+                type="text"
+                name="lastName"
+                placeholder="Last Name"
+                className="form-control"
+                onChange={handleChange}
+                required
+              />
             </div>
           </div>
           <div className="mb-3">
-            <input type="email" name="email" placeholder="Email" className="form-control" onChange={handleChange} required />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              className="form-control"
+              onChange={handleChange}
+              required
+            />
           </div>
           <div className="mb-3 position-relative">
             <input
               type={showPassword ? "text" : "password"}
               name="password"
-              placeholder="Password (8 or more characters)"
+              placeholder="Password (8+ characters)"
               className="form-control"
               onChange={handleChange}
               required
             />
             <span
-              className="position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer"
+              className="position-absolute top-50 end-0 translate-middle-y me-3"
               onClick={() => setShowPassword(!showPassword)}
               style={{ cursor: "pointer" }}
             >
@@ -90,7 +108,7 @@ export default function SignupFreelancerForm() {
             <input
               type="text"
               name="job"
-              placeholder="Job Role (e.g., Copywriter, Designer)"
+              placeholder="Job Role (e.g., Designer, Developer)"
               className="form-control"
               onChange={handleChange}
               required
@@ -107,17 +125,25 @@ export default function SignupFreelancerForm() {
             />
           </div>
           <div className="mb-3">
-            <select name="country" className="form-select" required onChange={handleChange}>
+            <select
+              name="country"
+              className="form-select"
+              onChange={handleChange}
+              required
+            >
               <option value="">Select your country</option>
               <option value="United Kingdom">United Kingdom</option>
               <option value="United States">United States</option>
               <option value="Canada">Canada</option>
             </select>
           </div>
-          <button className="btn btn-success w-100">Create Account</button>
+          <button type="submit" className="btn btn-success w-100">
+            Create Account
+          </button>
         </form>
         <p className="text-center mt-3">
-          Already have an account? <a href="/login" className="text-primary">Log In</a>
+          Already have an account?{" "}
+          <a href="/login" className="text-primary">Log In</a>
         </p>
       </div>
     </div>
