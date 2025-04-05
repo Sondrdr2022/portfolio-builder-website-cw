@@ -26,27 +26,46 @@ export default function SignupFreelancerForm() {
     e.preventDefault();
     setError(null);
 
+    // Step 1: Register user with Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
-      options: {
-        data: {
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          country: formData.country,
-          mobile: formData.mobile,
-          job: formData.job,
-          role: "freelancer", // ✅ fixed role
-        }
-      }
     });
 
     if (error) {
       setError(error.message);
-    } else {
-      alert("✅ Account created! Please verify your email before logging in.");
-      navigate("/login");
+      return;
     }
+
+    const user = data?.user;
+    if (!user) {
+      setError("User creation failed. Please try again.");
+      return;
+    }
+
+    // Step 2: Manually insert freelancer data into 'users' table
+    const { error: insertError } = await supabase.from("users").insert([
+      {
+        id: user.id,
+        email: formData.email,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        password: formData.password, // ⚠️ plain password (you requested)
+        mobile: formData.mobile,
+        country: formData.country,
+        job: formData.job,
+        role: "freelancer",
+      },
+    ]);
+
+    if (insertError) {
+      console.error(insertError);
+      setError("❌ Database error saving new user.");
+      return;
+    }
+
+    alert("✅ Account created! Please check your email to confirm.");
+    navigate("/login");
   };
 
   return (
@@ -58,36 +77,15 @@ export default function SignupFreelancerForm() {
 
           <div className="row mb-3">
             <div className="col">
-              <input
-                type="text"
-                name="firstName"
-                placeholder="First Name"
-                className="form-control"
-                onChange={handleChange}
-                required
-              />
+              <input type="text" name="firstName" placeholder="First Name" className="form-control" onChange={handleChange} required />
             </div>
             <div className="col">
-              <input
-                type="text"
-                name="lastName"
-                placeholder="Last Name"
-                className="form-control"
-                onChange={handleChange}
-                required
-              />
+              <input type="text" name="lastName" placeholder="Last Name" className="form-control" onChange={handleChange} required />
             </div>
           </div>
 
           <div className="mb-3">
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              className="form-control"
-              onChange={handleChange}
-              required
-            />
+            <input type="email" name="email" placeholder="Email" className="form-control" onChange={handleChange} required />
           </div>
 
           <div className="mb-3 position-relative">
@@ -109,34 +107,15 @@ export default function SignupFreelancerForm() {
           </div>
 
           <div className="mb-3">
-            <input
-              type="text"
-              name="job"
-              placeholder="Job Role (e.g., Designer, Developer)"
-              className="form-control"
-              onChange={handleChange}
-              required
-            />
+            <input type="text" name="job" placeholder="Job Role (e.g., Designer, Developer)" className="form-control" onChange={handleChange} required />
           </div>
 
           <div className="mb-3">
-            <input
-              type="tel"
-              name="mobile"
-              placeholder="Mobile Contact"
-              className="form-control"
-              onChange={handleChange}
-              required
-            />
+            <input type="tel" name="mobile" placeholder="Mobile Contact" className="form-control" onChange={handleChange} required />
           </div>
 
           <div className="mb-3">
-            <select
-              name="country"
-              className="form-select"
-              onChange={handleChange}
-              required
-            >
+            <select name="country" className="form-select" onChange={handleChange} required>
               <option value="">Select your country</option>
               <option value="United Kingdom">United Kingdom</option>
               <option value="United States">United States</option>

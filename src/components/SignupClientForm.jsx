@@ -24,8 +24,8 @@ export default function SignupClientForm() {
   const handleSignup = async (e) => {
     e.preventDefault();
     setError(null);
-
-    const { data, error } = await supabase.auth.signUp({
+  
+    const { error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
       options: {
@@ -34,15 +34,15 @@ export default function SignupClientForm() {
           last_name: formData.lastName,
           country: formData.country,
           mobile: formData.mobile,
-          role: "client"
-        }
-      }
+          role: "client", // just metadata for now
+        },
+      },
     });
-
+  
     if (error) {
-      setError(error.message);
+      setError("❌ " + error.message);
     } else {
-      alert("✅ Account created successfully. Please check your email to confirm your address.");
+      alert("✅ Account created! Please verify your email before logging in.");
       navigate("/login");
     }
   };
@@ -55,35 +55,14 @@ export default function SignupClientForm() {
           {error && <p className="text-danger text-center">{error}</p>}
           <div className="row mb-3">
             <div className="col">
-              <input
-                type="text"
-                name="firstName"
-                placeholder="First Name"
-                className="form-control"
-                onChange={handleChange}
-                required
-              />
+              <input type="text" name="firstName" placeholder="First Name" className="form-control" onChange={handleChange} required />
             </div>
             <div className="col">
-              <input
-                type="text"
-                name="lastName"
-                placeholder="Last Name"
-                className="form-control"
-                onChange={handleChange}
-                required
-              />
+              <input type="text" name="lastName" placeholder="Last Name" className="form-control" onChange={handleChange} required />
             </div>
           </div>
           <div className="mb-3">
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              className="form-control"
-              onChange={handleChange}
-              required
-            />
+            <input type="email" name="email" placeholder="Email" className="form-control" onChange={handleChange} required />
           </div>
           <div className="mb-3 position-relative">
             <input
@@ -103,31 +82,17 @@ export default function SignupClientForm() {
             </span>
           </div>
           <div className="mb-3">
-            <input
-              type="tel"
-              name="mobile"
-              placeholder="Mobile Contact"
-              className="form-control"
-              onChange={handleChange}
-              required
-            />
+            <input type="tel" name="mobile" placeholder="Mobile Contact" className="form-control" onChange={handleChange} required />
           </div>
           <div className="mb-3">
-            <select
-              name="country"
-              className="form-select"
-              onChange={handleChange}
-              required
-            >
+            <select name="country" className="form-select" onChange={handleChange} required>
               <option value="">Select your country</option>
               <option value="United Kingdom">United Kingdom</option>
               <option value="United States">United States</option>
               <option value="Canada">Canada</option>
             </select>
           </div>
-          <button type="submit" className="btn btn-success w-100">
-            Create Account
-          </button>
+          <button type="submit" className="btn btn-success w-100">Create Account</button>
         </form>
         <p className="text-center mt-3">
           Already have an account? <a href="/login" className="text-primary">Log In</a>

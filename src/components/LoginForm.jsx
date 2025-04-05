@@ -28,26 +28,26 @@ export default function LoginForm() {
     }
 
     const user = authData.user;
+    const meta = user.user_metadata;
 
-    // Check if user exists in users table
+    // Check if user already exists in users table
     const { data: existingUser, error: fetchError } = await supabase
       .from("users")
-      .select("*")
+      .select("id")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
 
-    if (fetchError || !existingUser) {
-      // If not found, insert new user using metadata
+    if (!existingUser) {
       const { error: insertError } = await supabase.from("users").insert([
         {
           id: user.id,
           email: user.email,
-          first_name: user.user_metadata?.first_name || "",
-          last_name: user.user_metadata?.last_name || "",
-          country: user.user_metadata?.country || "",
-          mobile: user.user_metadata?.mobile || "",
-          job: user.user_metadata?.job || null,
-          role: user.user_metadata?.role || "",
+          first_name: meta.first_name || "",
+          last_name: meta.last_name || "",
+          country: meta.country || "",
+          mobile: meta.mobile || "",
+          job: meta.job || null,
+          role: meta.role || "",
         },
       ]);
 
@@ -59,7 +59,7 @@ export default function LoginForm() {
       }
     }
 
-    // Fetch user again for role-based redirect
+    // Fetch role and redirect
     const { data: userData, error: roleError } = await supabase
       .from("users")
       .select("role, id")
@@ -68,12 +68,11 @@ export default function LoginForm() {
 
     setLoading(false);
 
-    if (roleError || !userData) {
+    if (roleError || !userData?.role) {
       setError("❌ User role not found");
       return;
     }
 
-    // Redirect based on role
     if (userData.role === "freelancer") {
       navigate(`/freelancer-dashboard/${userData.id}`);
     } else if (userData.role === "client") {
