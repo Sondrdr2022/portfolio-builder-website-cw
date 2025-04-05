@@ -58,61 +58,61 @@ export default function ClientDashboard() {
   });
 
   return (
-    <div className="d-flex" style={{ minHeight: "100vh" }}>
+    <div className="d-flex flex-column flex-md-row" style={{ minHeight: "100vh" }}>
       <ClientSidebar userData={userData} />
 
-      <div className="flex-grow-1 bg-light p-4">
+      <main className="flex-grow-1 p-4 bg-light">
         {/* Header */}
         <div className="mb-4">
           <h2 className="fw-bold">Dashboard</h2>
         </div>
 
-        {/* Centered content */}
-        <div className="d-flex justify-content-center mb-5">
-          <div className="text-center" style={{ maxWidth: "600px", width: "100%" }}>
-            <p className="text-muted mb-4">
-              Use this dashboard to connect with freelancers, oversee your portfolio, and stay updated on every project milestone. It’s designed to help you focus on what matters most — bringing your ideas to life and watching your progress unfold with each new step.
-            </p>
+        {/* Description and Search */}
+        <div className="text-center mb-5 px-2">
+          <p className="text-muted mx-auto" style={{ maxWidth: "600px" }}>
+            Use this dashboard to connect with freelancers, oversee your portfolio, and stay updated on every project milestone. It’s designed to help you focus on what matters most — bringing your ideas to life and watching your progress unfold with each new step.
+          </p>
 
-            <h4 className="fw-bold mb-3">Find Freelancer</h4>
-            <div className="input-group mx-auto" style={{ maxWidth: "400px" }}>
-              <span className="input-group-text">🔍</span>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search by name or role"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
+          <h4 className="fw-bold mb-3">Find Freelancer</h4>
+          <div className="input-group mx-auto" style={{ maxWidth: "400px" }}>
+            <span className="input-group-text">🔍</span>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search by name or role"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
         </div>
 
         {/* Freelancer Cards */}
-        <div className="d-flex flex-wrap gap-4 justify-content-center">
+        <div className="row justify-content-center g-4">
           {filteredFreelancers.slice(0, visibleCount).map((freelancer) => (
-            <div key={freelancer.id} className="card shadow-sm" style={{ width: "250px" }}>
-              <div className="card-body text-center">
-                <img
-                  src={freelancer.profile_image || "https://via.placeholder.com/80"}
-                  className="rounded-circle mb-2"
-                  width="80"
-                  height="80"
-                  alt="Freelancer"
-                />
-                <h6 className="fw-bold mb-0">
-                  {freelancer.first_name} {freelancer.last_name}
-                </h6>
-                <small className="text-muted">{freelancer.job}</small>
-                <div className="mt-2 mb-2">
-                  <strong>${freelancer.rate || 50}/hr</strong>
-                </div>
-                <button
+            <div key={freelancer.id} className="col-12 col-sm-6 col-md-4 col-lg-3 d-flex">
+              <div className="card shadow-sm w-100 text-center">
+                <div className="card-body">
+                  <img
+                    src={freelancer.profile_image || "https://via.placeholder.com/80"}
+                    className="rounded-circle mb-2"
+                    width="80"
+                    height="80"
+                    alt="Freelancer"
+                  />
+                  <h6 className="fw-bold mb-0">
+                    {freelancer.first_name} {freelancer.last_name}
+                  </h6>
+                  <small className="text-muted">{freelancer.job}</small>
+                  <div className="mt-2 mb-2">
+                    <strong>${freelancer.rate || 50}/hr</strong>
+                  </div>
+                  <button
                     className="btn btn-primary btn-sm"
                     onClick={() => navigate(`/freelancer/${freelancer.id}/profile`)}
-                    >
+                  >
                     See more
-                </button>
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -129,7 +129,7 @@ export default function ClientDashboard() {
             </button>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

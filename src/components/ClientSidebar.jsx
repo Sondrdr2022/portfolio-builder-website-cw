@@ -29,7 +29,7 @@ export default function ClientSidebar({ userData }) {
 
   return (
     <>
-      {/* Mobile toggle button */}
+      {/* Mobile menu button */}
       <button
         className="d-md-none position-fixed top-3 start-3 btn btn-dark rounded-circle p-2"
         style={{ zIndex: 9999 }}
@@ -40,8 +40,8 @@ export default function ClientSidebar({ userData }) {
 
       {/* Sidebar for desktop */}
       <div
-        className="bg-dark text-white p-3 d-none d-md-flex flex-column align-items-start"
-        style={{ width: "250px", minHeight: "100vh" }}
+        className="bg-dark text-white d-none d-md-flex flex-column p-3"
+        style={{ width: "250px", height: "100vh", position: "sticky", top: 0 }}
       >
         <SidebarContent
           userData={userData}
@@ -59,7 +59,7 @@ export default function ClientSidebar({ userData }) {
           animate={{ x: 0 }}
           exit={{ x: -300 }}
           transition={{ duration: 0.3 }}
-          className="bg-dark text-white p-3 d-flex flex-column align-items-start position-fixed top-0 start-0"
+          className="bg-dark text-white p-3 d-flex flex-column position-fixed top-0 start-0"
           style={{ width: "250px", height: "100vh", zIndex: 9999 }}
         >
           <button
@@ -70,9 +70,18 @@ export default function ClientSidebar({ userData }) {
           </button>
           <SidebarContent
             userData={userData}
-            goToDashboard={() => { goToDashboard(); setIsOpen(false); }}
-            goToEditPage={() => { goToEditPage(); setIsOpen(false); }}
-            goToActivity={() => { goToActivity(); setIsOpen(false); }}
+            goToDashboard={() => {
+              goToDashboard();
+              setIsOpen(false);
+            }}
+            goToEditPage={() => {
+              goToEditPage();
+              setIsOpen(false);
+            }}
+            goToActivity={() => {
+              goToActivity();
+              setIsOpen(false);
+            }}
             handleLogout={handleLogout}
           />
         </motion.div>
@@ -156,29 +165,43 @@ function SidebarContent({ userData, goToDashboard, goToEditPage, goToActivity, h
         />
         <div>
           <h5 className="fw-bold mb-0">
-            {userData?.first_name || "Profile"} {userData?.last_name || ""}
+            {userData?.first_name || "Client"} {userData?.last_name || ""}
           </h5>
           <small className="text-muted">{userData?.job || "Client"}</small>
         </div>
       </div>
+
       <ul className="list-unstyled w-100">
         <li className="my-3">
-          <button onClick={goToDashboard} className="btn btn-link text-white p-0 text-decoration-none">
+          <button
+            onClick={goToDashboard}
+            className="btn btn-link text-white text-decoration-none p-0"
+          >
             Dashboard
           </button>
         </li>
         <li className="my-3">
-          <button onClick={goToEditPage} className="btn btn-link text-white p-0 text-decoration-none">
+          <button
+            onClick={goToEditPage}
+            className="btn btn-link text-white text-decoration-none p-0"
+          >
             Details
           </button>
         </li>
         <li className="my-3">
-          <button onClick={goToActivity} className="btn btn-link text-white p-0 text-decoration-none">
+          <button
+            onClick={goToActivity}
+            className="btn btn-link text-white text-decoration-none p-0"
+          >
             Activity
           </button>
         </li>
       </ul>
-      <button className="btn btn-outline-light mt-auto w-100" onClick={handleLogout}>
+
+      <button
+        className="btn btn-outline-light mt-auto w-100"
+        onClick={handleLogout}
+      >
         Log Out
       </button>
     </>

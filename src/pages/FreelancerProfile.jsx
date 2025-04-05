@@ -9,12 +9,54 @@ export default function FreelancerProfile() {
   const [freelancer, setFreelancer] = useState(null);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [clientId, setClientId] = useState(null);
+
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    project_name: "",
+    description: "",
+  });
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const { error } = await supabase.from("freelancer_requests").insert([
+      {
+        freelancer_id: id,
+        client_id: clientId,
+        ...form,
+        status: "pending",
+      },
+    ]);
+
+    if (error) {
+      console.error("❌ Supabase insert error:", error);
+      alert(`❌ Request failed: ${error.message}`);
+      return;
+    }
+
+    alert("✅ Request submitted successfully!");
+    setShowModal(false);
+    setForm({
+      first_name: "",
+      last_name: "",
+      email: "",
+      project_name: "",
+      description: "",
+    });
+  };
 
   useEffect(() => {
     const fetchFreelancerAndProjects = async () => {
       setLoading(true);
 
-      // Fetch freelancer info
       const { data: freelancerData, error: freelancerError } = await supabase
         .from("users")
         .select("first_name, last_name, job, profile_image, description")
@@ -27,9 +69,6 @@ export default function FreelancerProfile() {
         setFreelancer(freelancerData);
       }
 
-      console.log("🧠 ID from URL:", id);
-
-      // Fetch freelancer projects
       const { data: projectData, error: projectError } = await supabase
         .from("freelancer_portfolios")
         .select("id, project_name, project_description, project_url, screenshot_url")
@@ -42,22 +81,24 @@ export default function FreelancerProfile() {
         setProjects(projectData);
       }
 
-      
-    console.log("✅ Raw result:", projectData);
-    console.log("❌ Error:", projectError);
-
       setLoading(false);
     };
 
-    if (id) fetchFreelancerAndProjects();
+    const fetchClientId = async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error || !user) return;
+      setClientId(user.id);
+    };
+
+    if (id) {
+      fetchFreelancerAndProjects();
+      fetchClientId();
+    }
   }, [id]);
 
   return (
     <div className="container py-5">
-      <button
-        className="btn btn-outline-secondary mb-4"
-        onClick={() => navigate(-1)}
-      >
+      <button className="btn btn-outline-secondary mb-4" onClick={() => navigate(-1)}>
         ← Back
       </button>
 
@@ -65,7 +106,6 @@ export default function FreelancerProfile() {
         <p>Loading...</p>
       ) : (
         <>
-          {/* Freelancer Info */}
           {freelancer && (
             <>
               <h2 className="fw-bold mb-4">Dashboard</h2>
@@ -83,18 +123,17 @@ export default function FreelancerProfile() {
                   }}
                 />
                 <div>
-                  <h3 className="fw-bold">
-                    {freelancer.first_name} {freelancer.last_name}
-                  </h3>
+                  <h3 className="fw-bold">{freelancer.first_name} {freelancer.last_name}</h3>
                   <p className="text-muted mb-1">{freelancer.job}</p>
                   <p className="text-secondary">{freelancer.description}</p>
-                  <button className="btn btn-success mt-2">Request</button>
+                  <button className="btn btn-success mt-2" onClick={() => setShowModal(true)}>
+                    Request
+                  </button>
                 </div>
               </div>
             </>
           )}
 
-          {/* Projects */}
           <h4 className="fw-bold mb-3 text-center">My Projects</h4>
           {projects.length === 0 ? (
             <p className="text-muted text-center">No projects available.</p>
@@ -103,10 +142,7 @@ export default function FreelancerProfile() {
               {projects.map((project) => (
                 <div key={project.id} className="card" style={{ width: "18rem" }}>
                   <img
-                    src={
-                      project.screenshot_url ||
-                      "https://via.placeholder.com/300x180?text=No+Image"
-                    }
+                    src={project.screenshot_url || "https://via.placeholder.com/300x180?text=No+Image"}
                     className="card-img-top"
                     alt={project.project_name || "Project Screenshot"}
                   />
@@ -127,6 +163,83 @@ export default function FreelancerProfile() {
             </div>
           )}
         </>
+      )}
+
+      {showModal && (
+        <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <form onSubmit={handleSubmit}>
+                <div className="modal-header">
+                  <h5 className="modal-title">Request Freelancer</h5>
+                  <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+                </div>
+                <div className="modal-body">
+                  <div className="mb-3">
+                    <label>First Name</label>
+                    <input
+                      name="first_name"
+                      value={form.first_name}
+                      onChange={handleChange}
+                      className="form-control"
+                      required
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label>Last Name</label>
+                    <input
+                      name="last_name"
+                      value={form.last_name}
+                      onChange={handleChange}
+                      className="form-control"
+                      required
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label>Email</label>
+                    <input
+                      name="email"
+                      type="email"
+                      value={form.email}
+                      onChange={handleChange}
+                      className="form-control"
+                      required
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label>Project Name</label>
+                    <input
+                      name="project_name"
+                      value={form.project_name}
+                      onChange={handleChange}
+                      className="form-control"
+                      required
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label>Description</label>
+                    <textarea
+                      name="description"
+                      rows="4"
+                      value={form.description}
+                      onChange={handleChange}
+                      className="form-control"
+                      required
+                    ></textarea>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button className="btn btn-secondary" onClick={() => setShowModal(false)} type="button">
+                    Cancel
+                  </button>
+                  <button className="btn btn-success" type="submit">
+                    Request
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

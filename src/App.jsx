@@ -10,17 +10,21 @@ import PortfolioPage from "./pages/PortfolioPage";
 import ClientDashboard from "./pages/ClientDashboard";
 import ClientDetails from "./pages/ClientDetails";
 import FreelancerProfile from "./pages/FreelancerProfile";
+import ClientActivity from "./pages/ClientActivity";
+import FreelancerActivity from "./pages/FreelancerActivity";
 
 export default function App() {
   return (
     <Router>
       <Routes>
         <Route path="/client-dashboard/:id" element={<ClientDashboard />} />
+        <Route path="/client-dashboard/:id/activity" element={<ClientActivity />} />
         <Route path="/client-dashboard/:id/details" element={<ClientDetails />} />
         <Route path="/freelancer/:id/profile" element={<FreelancerProfile />} />
         <Route path="/freelancer-dashboard/:id" element={<FreelancerDashboard />} />
         <Route path="/freelancer-dashboard/:id/details" element={<UserDetails />} />
         <Route path='/freelancer-dashboard/:id/portfolio' element={<PortfolioPage />} />
+        <Route path="/freelancer-dashboard/:id/activity" element={<FreelancerActivity />} />
         <Route path="/login" element={<AuthPage />} />
         <Route path="/signup-client" element={<SignupClient />} />
         <Route path="/signup-freelancer" element={<SignupFreelancer />} />

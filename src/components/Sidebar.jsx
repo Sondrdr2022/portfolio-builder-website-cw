@@ -201,22 +201,22 @@ function SidebarContent({
       {/* Navigation */}
       <ul className="list-unstyled flex-grow-1">
         <li className="my-2">
-          <button onClick={goToDashboard} className="btn btn-link text-white p-0">
+          <button onClick={goToDashboard} className="btn btn-link text-white p-0 text-decoration-none">
             Dashboard
           </button>
         </li>
         <li className="my-2">
-          <button onClick={goToEditPage} className="btn btn-link text-white p-0">
+          <button onClick={goToEditPage} className="btn btn-link text-white p-0 text-decoration-none">
             Details
           </button>
         </li>
         <li className="my-2">
-          <button onClick={goToPortfolio} className="btn btn-link text-white p-0">
+          <button onClick={goToPortfolio} className="btn btn-link text-white p-0 text-decoration-none">
             Portfolio
           </button>
         </li>
         <li className="my-2">
-          <button onClick={goToActivity} className="btn btn-link text-white p-0">
+          <button onClick={goToActivity} className="btn btn-link text-white p-0 text-decoration-none">
             Activity
           </button>
         </li>
