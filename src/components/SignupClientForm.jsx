@@ -12,6 +12,7 @@ export default function SignupClientForm() {
     country: "",
     mobile: "",
   });
+
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -33,12 +34,10 @@ export default function SignupClientForm() {
           last_name: formData.lastName,
           country: formData.country,
           mobile: formData.mobile,
-          role: "client", // or "freelancer"
-          job: formData.job || null,
+          role: "client"
         }
       }
     });
-    
 
     if (error) {
       setError(error.message);

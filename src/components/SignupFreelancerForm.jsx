@@ -13,6 +13,7 @@ export default function SignupFreelancerForm() {
     mobile: "",
     job: "",
   });
+
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -34,12 +35,11 @@ export default function SignupFreelancerForm() {
           last_name: formData.lastName,
           country: formData.country,
           mobile: formData.mobile,
-          role: "client", // or "freelancer"
-          job: formData.job || null,
+          job: formData.job,
+          role: "freelancer", // ✅ fixed role
         }
       }
     });
-    
 
     if (error) {
       setError(error.message);
@@ -55,6 +55,7 @@ export default function SignupFreelancerForm() {
         <h2 className="text-center mb-4">Sign Up as a Freelancer</h2>
         <form onSubmit={handleSignup}>
           {error && <p className="text-danger text-center">{error}</p>}
+
           <div className="row mb-3">
             <div className="col">
               <input
@@ -77,6 +78,7 @@ export default function SignupFreelancerForm() {
               />
             </div>
           </div>
+
           <div className="mb-3">
             <input
               type="email"
@@ -87,6 +89,7 @@ export default function SignupFreelancerForm() {
               required
             />
           </div>
+
           <div className="mb-3 position-relative">
             <input
               type={showPassword ? "text" : "password"}
@@ -104,6 +107,7 @@ export default function SignupFreelancerForm() {
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
+
           <div className="mb-3">
             <input
               type="text"
@@ -114,6 +118,7 @@ export default function SignupFreelancerForm() {
               required
             />
           </div>
+
           <div className="mb-3">
             <input
               type="tel"
@@ -124,6 +129,7 @@ export default function SignupFreelancerForm() {
               required
             />
           </div>
+
           <div className="mb-3">
             <select
               name="country"
@@ -137,10 +143,12 @@ export default function SignupFreelancerForm() {
               <option value="Canada">Canada</option>
             </select>
           </div>
+
           <button type="submit" className="btn btn-success w-100">
             Create Account
           </button>
         </form>
+
         <p className="text-center mt-3">
           Already have an account?{" "}
           <a href="/login" className="text-primary">Log In</a>
