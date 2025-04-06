@@ -11,6 +11,7 @@ const PortfolioPage = () => {
   const [projectUrl, setProjectUrl] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -58,6 +59,8 @@ const PortfolioPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setMessage("");
 
     const screenshotUrl = await uploadScreenshotToStorage(projectUrl, freelancerId);
 
@@ -70,6 +73,8 @@ const PortfolioPage = () => {
         screenshot_url: screenshotUrl,
       },
     ]);
+
+    setLoading(false);
 
     if (error) {
       console.error(error);
@@ -131,7 +136,9 @@ const PortfolioPage = () => {
                 ></textarea>
               </div>
 
-              <button type="submit" className="btn btn-primary w-100">Add Project</button>
+              <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+                {loading ? "Adding..." : "Add Project"}
+              </button>
 
               {message && <p className="mt-3 text-center">{message}</p>}
             </form>

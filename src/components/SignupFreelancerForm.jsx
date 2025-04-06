@@ -26,46 +26,27 @@ export default function SignupFreelancerForm() {
     e.preventDefault();
     setError(null);
 
-    // Step 1: Register user with Supabase Auth
-    const { data, error } = await supabase.auth.signUp({
+    const { error: signUpError } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
+      options: {
+        data: {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          country: formData.country,
+          mobile: formData.mobile,
+          job: formData.job,
+          role: "freelancer",
+        },
+      },
     });
 
-    if (error) {
-      setError(error.message);
-      return;
+    if (signUpError) {
+      setError("❌ " + signUpError.message);
+    } else {
+      alert("✅ Account created! Please verify your email before logging in.");
+      navigate("/login");
     }
-
-    const user = data?.user;
-    if (!user) {
-      setError("User creation failed. Please try again.");
-      return;
-    }
-
-    // Step 2: Manually insert freelancer data into 'users' table
-    const { error: insertError } = await supabase.from("users").insert([
-      {
-        id: user.id,
-        email: formData.email,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        password: formData.password, // ⚠️ plain password (you requested)
-        mobile: formData.mobile,
-        country: formData.country,
-        job: formData.job,
-        role: "freelancer",
-      },
-    ]);
-
-    if (insertError) {
-      console.error(insertError);
-      setError("❌ Database error saving new user.");
-      return;
-    }
-
-    alert("✅ Account created! Please check your email to confirm.");
-    navigate("/login");
   };
 
   return (
@@ -123,9 +104,7 @@ export default function SignupFreelancerForm() {
             </select>
           </div>
 
-          <button type="submit" className="btn btn-success w-100">
-            Create Account
-          </button>
+          <button type="submit" className="btn btn-success w-100">Create Account</button>
         </form>
 
         <p className="text-center mt-3">
